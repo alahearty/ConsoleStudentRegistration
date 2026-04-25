@@ -66,6 +66,53 @@ public static class ConsoleHelper
         return input;
     }
 
+    public static string ReadInput(string prompt, string defaultValue)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write($"\n  {prompt} [{defaultValue}]: ");
+        Console.ForegroundColor = ConsoleColor.White;
+        var input = Console.ReadLine()?.Trim();
+        Console.ResetColor();
+        return string.IsNullOrWhiteSpace(input) ? defaultValue : input;
+    }
+
+    public static string ReadSecret(string prompt)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write($"\n  {prompt}: ");
+        Console.ForegroundColor = ConsoleColor.White;
+
+        var chars = new List<char>();
+        while (true)
+        {
+            var key = Console.ReadKey(intercept: true);
+            if (key.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                break;
+            }
+
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (chars.Count == 0)
+                    continue;
+
+                chars.RemoveAt(chars.Count - 1);
+                Console.Write("\b \b");
+                continue;
+            }
+
+            if (char.IsControl(key.KeyChar))
+                continue;
+
+            chars.Add(key.KeyChar);
+            Console.Write('*');
+        }
+
+        Console.ResetColor();
+        return new string(chars.ToArray());
+    }
+
     public static int ReadInt(string prompt, int min = int.MinValue, int max = int.MaxValue)
     {
         while (true)
